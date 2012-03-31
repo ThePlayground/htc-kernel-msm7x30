@@ -71,7 +71,7 @@ cd ../../
 rm -fr tmpdir
 cd $ANDROIDREPO
 git checkout gh-pages
-git commit -a -m "Automated Spade Kernel Build - Patch"
+git commit -a -m "Automated ${PROPER} Kernel Build - Patch"
 git push git@github.com:$DROIDGITHUB HEAD:ics -f
 
 fi
