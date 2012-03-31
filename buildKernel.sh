@@ -39,7 +39,7 @@ cp "${j}" $SPADEREPO/kernel/lib/modules
 done
 
 if [ -e arch/arm/boot/zImage ]; then
-cd $SHOOTREPO
+cd $SPADEREPO
 git commit -a -m "Automated Kernel Update - ${PROPER}"
 git push git@github.com:$SHOOTGITHUB HEAD:ics -f
 fi
