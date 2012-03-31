@@ -40,7 +40,7 @@ for j in $(find . -name "*.ko"); do
 cp "${j}" $SPADEREPO/kernel/lib/modules
 done
 
-if [ -e $SPADEREPO/kernel/kernel ]; then
+if [ -e arch/arm/boot/zImage ]; then
 cd $SHOOTREPO
 git commit -a -m "Automated Kernel Update - ${PROPER}"
 git push git@github.com:$SHOOTGITHUB HEAD:ics -f
@@ -63,6 +63,7 @@ for j in tmpdir/*.ko; do
     cp "${j}" tmpdir/anykernel/system/lib/modules/
 done
 
+if [ -e arch/arm/boot/zImage ]; then
 echo "making zip file"
 cd tmpdir/anykernel
 zip -r $zipfile *
@@ -73,6 +74,7 @@ cd $ANDROIDREPO
 git checkout gh-pages
 git commit -a -m "Automated Patch Kernel Build - ${PROPER}"
 git push git@github.com:$DROIDGITHUB HEAD:ics -f
+fi
 
 fi
 
