@@ -34,6 +34,8 @@ if [ "$2" == "ace" ]; then
 echo "adding to build"
 
 cp -R arch/arm/boot/zImage $SPADEREPO/kernel/kernel
+rm -r $SPADEREPO/kernel/lib/modules
+mkdir -r $SPADEREPO/kernel/lib/modules
 for j in $(find . -name "*.ko"); do
 cp "${j}" $SPADEREPO/kernel/lib/modules
 done
