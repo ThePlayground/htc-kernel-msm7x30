@@ -29,22 +29,21 @@ make -j$CPU_JOB_NUM ARCH=arm CROSS_COMPILE=$TOOLCHAIN_PREFIX
 
 find . -name "*.ko" | xargs ${TOOLCHAIN_PREFIX}strip --strip-unneeded
 
+if [ -e arch/arm/boot/zImage ]; then
+
 if [ "$2" == "ace" ]; then
 
 echo "adding to build"
 
 cp -R arch/arm/boot/zImage $SPADEREPO/kernel/kernel
-rm -r $SPADEREPO/kernel/lib/modules
-mkdir $SPADEREPO/kernel/lib/modules
+rm -r $SPADEREPO/kernel/lib/modules/*
 for j in $(find . -name "*.ko"); do
 cp "${j}" $SPADEREPO/kernel/lib/modules
 done
 
-if [ -e arch/arm/boot/zImage ]; then
 cd $SPADEREPO
 git commit -a -m "Automated Kernel Update - ${PROPER}"
 git push git@github.com:$SHOOTGITHUB HEAD:ics -f
-fi
 
 else
 
@@ -63,7 +62,6 @@ for j in tmpdir/*.ko; do
     cp "${j}" tmpdir/anykernel/system/lib/modules/
 done
 
-if [ -e arch/arm/boot/zImage ]; then
 echo "making zip file"
 cd tmpdir/anykernel
 zip -r $zipfile *
@@ -74,6 +72,7 @@ cd $ANDROIDREPO
 git checkout gh-pages
 git commit -a -m "Automated Patch Kernel Build - ${PROPER}"
 git push git@github.com:$DROIDGITHUB HEAD:ics -f
+
 fi
 
 fi
