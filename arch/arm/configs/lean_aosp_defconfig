@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.35.14
-# Fri Apr  6 21:47:47 2012
+# Fri Apr  6 23:33:20 2012
 #
 CONFIG_ARM=y
 CONFIG_SYS_SUPPORTS_APM_EMULATION=y
@@ -48,7 +48,7 @@ CONFIG_KERNEL_GZIP=y
 # CONFIG_KERNEL_LZMA is not set
 # CONFIG_KERNEL_XZ is not set
 # CONFIG_KERNEL_LZO is not set
-CONFIG_SWAP=y
+# CONFIG_SWAP is not set
 # CONFIG_SYSVIPC is not set
 # CONFIG_POSIX_MQUEUE is not set
 # CONFIG_BSD_PROCESS_ACCT is not set
@@ -427,7 +427,6 @@ CONFIG_PROC_COMM_TIMEOUT_RESET=y
 # CONFIG_MSM_GSBI9_UART is not set
 # CONFIG_MSM7X30_DDR2 is not set
 # CONFIG_SUPPORT_DQ_BATTERY is not set
-CONFIG_UNLOCK_184MHZ=y
 
 #
 # Processor Type

@@ -125,21 +125,16 @@ wait:		mrc	p14, 0, pc, c0, c1, 0
  * sort out different calling conventions
  */
 		.align
-		.arm				@ Always enter in ARM state
 start:
 		.type	start,#function
-		.rept	7
+		.rept	8
 		mov	r0, r0
 		.endr
-   ARM(		mov	r0, r0		)
-   ARM(		b	1f		)
- THUMB(		adr	r12, BSYM(1f)	)
- THUMB(		bx	r12		)
 
+		b	1f
 		.word	0x016f2818		@ Magic numbers to help the loader
 		.word	start			@ absolute load/run zImage address
 		.word	_edata			@ zImage end address
- THUMB(		.thumb			)
 1:		mov	r7, r1			@ save architecture ID
 		mov	r8, r2			@ save atags pointer
 
@@ -175,17 +170,9 @@ not_angel:
 
 		.text
 		adr	r0, LC0
- ARM(		ldmia	r0, {r1, r2, r3, r5, r6, r11, ip, sp})
- THUMB(		ldmia	r0, {r1, r2, r3, r5, r6, r11, ip}	)
+ ARM(		ldmia	r0, {r1, r2, r3, r4, r5, r6, r11, ip, sp})
+ THUMB(		ldmia	r0, {r1, r2, r3, r4, r5, r6, r11, ip}	)
  THUMB(		ldr	sp, [r0, #32]				)
-#ifdef CONFIG_AUTO_ZRELADDR
-		@ determine final kernel image address
-		mov	r4, pc
-		and	r4, r4, #0xf8000000
-		add	r4, r4, #TEXT_OFFSET
-#else
-		ldr	r4, =zreladdr
-#endif
 		subs	r0, r0, r1		@ calculate the delta offset
 
 						@ if delta is zero, we are
@@ -302,11 +289,6 @@ not_relocated:	mov	r0, #0
 		mov	sp, r1
 		add	sp, sp, #128		@ relocate the stack
 
-#ifndef CONFIG_ZBOOT_ROM
-		/* cache_clean_flush may use the stack, so relocate it */
-		add	sp, sp, r6
-#endif
-
 		bl	cache_clean_flush
  ARM(		add	pc, r5, r0		) @ call relocation code
  THUMB(		add	r12, r5, r0		)
@@ -328,17 +310,18 @@ wont_overwrite:	mov	r0, r4
 LC0:		.word	LC0			@ r1
 		.word	__bss_start		@ r2
 		.word	_end			@ r3
+		.word	zreladdr		@ r4
 		.word	_start			@ r5
 		.word	_image_size		@ r6
 		.word	_got_start		@ r11
 		.word	_got_end		@ ip
-		.word	user_stack_end		@ sp
+		.word	user_stack+4096		@ sp
 LC1:		.word	reloc_end - reloc_start
 		.size	LC0, . - LC0
 
 #ifdef CONFIG_ARCH_RPC
 		.globl	params
-params:		ldr	r0, =0x10000100		@ params_phys for RPC
+params:		ldr	r0, =params_phys
 		mov	pc, lr
 		.ltorg
 		.align
@@ -356,8 +339,9 @@ params:		ldr	r0, =0x10000100		@ params_phys for RPC
  *  r4 = kernel execution address
  *  r7 = architecture number
  *  r8 = atags pointer
+ *  r9 = run-time address of "start"  (???)
  * On exit,
- *  r0, r1, r2, r3, r9, r10, r12 corrupted
+ *  r1, r2, r3, r9, r10, r12 corrupted
  * This routine must preserve:
  *  r4, r5, r6, r7, r8
  */
@@ -412,18 +396,12 @@ __armv3_mpu_cache_on:
 
 		mov	r0, #0
 		mcr	p15, 0, r0, c7, c0, 0	@ invalidate whole cache v3
-		/*
-		 * ?? ARMv3 MMU does not allow reading the control register,
-		 * does this really work on ARMv3 MPU?
-		 */
 		mrc	p15, 0, r0, c1, c0, 0	@ read control reg
 						@ .... .... .... WC.M
 		orr	r0, r0, #0x000d		@ .... .... .... 11.1
-		/* ?? this overwrites the value constructed above? */
 		mov	r0, #0
 		mcr	p15, 0, r0, c1, c0, 0	@ write control reg
 
-		/* ?? invalidate for the second time? */
 		mcr	p15, 0, r0, c7, c0, 0	@ invalidate whole cache v3
 		mov	pc, lr
 
@@ -457,8 +435,7 @@ __setup_mmu:	sub	r3, r4, #16384		@ Page directory size
  */
 		mov	r1, #0x1e
 		orr	r1, r1, #3 << 10
-		mov	r2, pc
-		mov	r2, r2, lsr #20
+		mov	r2, pc, lsr #20
 		orr	r1, r1, r2, lsl #20
 		add	r0, r3, r2, lsl #2
 		str	r1, [r0], #4
@@ -797,10 +774,8 @@ proc_types:
  * Turn off the Cache and MMU.  ARMv3 does not support
  * reading the control register, but ARMv4 does.
  *
- * On exit,
- *  r0, r1, r2, r3, r9, r12 corrupted
- * This routine must preserve:
- *  r4, r6, r7
+ * On exit, r0, r1, r2, r3, r9, r12 corrupted
+ * This routine must preserve: r4, r6, r7
  */
 		.align	5
 cache_off:	mov	r3, #12			@ cache_off function
@@ -873,7 +848,7 @@ __armv3_mmu_cache_off:
  * Clean and flush the cache to maintain consistency.
  *
  * On exit,
- *  r1, r2, r3, r9, r10, r11, r12 corrupted
+ *  r1, r2, r3, r9, r11, r12 corrupted
  * This routine must preserve:
  *  r0, r4, r5, r6, r7
  */
@@ -1016,7 +991,7 @@ no_cache_id:
 __armv3_mmu_cache_flush:
 __armv3_mpu_cache_flush:
 		mov	r1, #0
-		mcr	p15, 0, r1, c7, c0, 0	@ invalidate whole cache v3
+		mcr	p15, 0, r0, c7, c0, 0	@ invalidate whole cache v3
 		mov	pc, lr
 
 /*
@@ -1029,7 +1004,6 @@ __armv3_mpu_cache_flush:
 phexbuf:	.space	12
 		.size	phexbuf, . - phexbuf
 
-@ phex corrupts {r0, r1, r2, r3}
 phex:		adr	r3, phexbuf
 		mov	r2, #0
 		strb	r2, [r3, r1]
@@ -1044,7 +1018,6 @@ phex:		adr	r3, phexbuf
 		strb	r2, [r3, r1]
 		b	1b
 
-@ puts corrupts {r0, r1, r2, r3}
 puts:		loadsp	r3, r1
 1:		ldrb	r2, [r0], #1
 		teq	r2, #0
@@ -1059,14 +1032,12 @@ puts:		loadsp	r3, r1
 		teq	r0, #0
 		bne	1b
 		mov	pc, lr
-@ putc corrupts {r0, r1, r2, r3}
 putc:
 		mov	r2, r0
 		mov	r0, #0
 		loadsp	r3, r1
 		b	2b
 
-@ memdump corrupts {r0, r1, r2, r3, r10, r11, r12, lr}
 memdump:	mov	r12, r0
 		mov	r10, lr
 		mov	r11, #0
@@ -1100,6 +1071,5 @@ memdump:	mov	r12, r0
 reloc_end:
 
 		.align
-		.section ".stack", "aw", %nobits
+		.section ".stack", "w"
 user_stack:	.space	4096
-user_stack_end:
