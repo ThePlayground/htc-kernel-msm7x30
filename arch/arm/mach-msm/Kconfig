@@ -1873,8 +1873,3 @@ config SUPPORT_DQ_BATTERY
 	default n
 	help
 		support DQ battery.
-
-config UNLOCK_184MHZ
-        bool "Unlock 184Mhz"
-        depends on ARCH_MSM7X30
-        default n
