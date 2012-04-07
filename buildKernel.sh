@@ -26,13 +26,6 @@ ls config
 read configfile
 cp -R config/$configfile .config
 
-cp -R $ICSREPO/rootdir/init.rc $KERNELSPEC/mkboot.aosp/boot.img-ramdisk
-cp -R $ICSREPO/rootdir/ueventd.rc $KERNELSPEC/mkboot.aosp/boot.img-ramdisk
-cp -R $SPDTWKR/speedtweak.sh $KERNELSPEC/mkboot.aosp/boot.img-ramdisk/sbin
-cp -R $SPADEREPO/kernel/init.spade.rc $KERNELSPEC/mkboot.aosp/boot.img-ramdisk
-cp -R $SPADEREPO/kernel/ueventd.spade.rc $KERNELSPEC/mkboot.aosp/boot.img-ramdisk
-cp -R $MSMREPO/kernel/init.msm7x30.usb.rc $KERNELSPEC/mkboot.aosp/boot.img-ramdisk
-
 make clean -j$CPU_JOB_NUM
 
 make -j$CPU_JOB_NUM ARCH=arm CROSS_COMPILE=$TOOLCHAIN_PREFIX
@@ -58,6 +51,13 @@ git commit -a -m "Automated Kernel Update - ${PROPER}"
 git push git@github.com:$SPADEGITHUB HEAD:ics -f
 
 else
+
+cp -R $ICSREPO/rootdir/init.rc $KERNELSPEC/mkboot.aosp/boot.img-ramdisk
+cp -R $ICSREPO/rootdir/ueventd.rc $KERNELSPEC/mkboot.aosp/boot.img-ramdisk
+cp -R $SPDTWKR/speedtweak.sh $KERNELSPEC/mkboot.aosp/boot.img-ramdisk/sbin
+cp -R $SPADEREPO/kernel/init.spade.rc $KERNELSPEC/mkboot.aosp/boot.img-ramdisk
+cp -R $SPADEREPO/kernel/ueventd.spade.rc $KERNELSPEC/mkboot.aosp/boot.img-ramdisk
+cp -R $MSMREPO/kernel/init.msm7x30.usb.rc $KERNELSPEC/mkboot.aosp/boot.img-ramdisk
 
 if [ ! -e zip.aosp/system/lib ]; then
 mkdir zip.aosp/system/lib
