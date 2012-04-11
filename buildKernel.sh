@@ -14,7 +14,6 @@ DROIDGITHUB=TwistedUmbrella/Twisted-Playground.git
 SPADEREPO=/Volumes/android/github-aosp_source/android_device_htc_ace
 SPADEGITHUB=ThePlayground/android_device_htc_ace.git
 ICSREPO=/Volumes/android/github-aosp_source/android_system_core
-SPDTWKR=/Volumes/android/Twisted-Playground/ScriptFusion
 MSMREPO=/Volumes/android/github-aosp_source/android_device_htc_msm7x30-common
 zipfile=$HANDLE"_Andromadus-hijack_ICS.zip"
 
@@ -36,7 +35,7 @@ cp .config arch/arm/configs/lean_aosp_defconfig
 
 if [ -e arch/arm/boot/zImage ]; then
 
-if [ "$2" == "ace" ]; then
+if [ "$1" == "1" ]; then
 
 echo "adding to build"
 
@@ -54,7 +53,6 @@ else
 
 cp -R $ICSREPO/rootdir/init.rc $KERNELSPEC/mkboot.aosp/boot.img-ramdisk
 cp -R $ICSREPO/rootdir/ueventd.rc $KERNELSPEC/mkboot.aosp/boot.img-ramdisk
-cp -R $SPDTWKR/speedtweak.sh $KERNELSPEC/mkboot.aosp/boot.img-ramdisk/sbin
 cp -R $SPADEREPO/kernel/init.spade.rc $KERNELSPEC/mkboot.aosp/boot.img-ramdisk
 cp -R $SPADEREPO/kernel/ueventd.spade.rc $KERNELSPEC/mkboot.aosp/boot.img-ramdisk
 cp -R $MSMREPO/kernel/init.msm7x30.usb.rc $KERNELSPEC/mkboot.aosp/boot.img-ramdisk
