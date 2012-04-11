@@ -1,4 +1,4 @@
-/* Copyright (c) 2010, 2012, Code Aurora Forum. All rights reserved.
+/* Copyright (c) 2010, Code Aurora Forum. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -34,16 +34,14 @@
 #include <linux/cdev.h>
 #include "vidc_init.h"
 
-#define NUM_OF_DRIVER_NODES 2
-
 struct vid_dec_msg {
 	struct list_head list;
 	struct vdec_msginfo vdec_msg_info;
 };
 
 struct vid_dec_dev {
-	struct cdev cdev[NUM_OF_DRIVER_NODES];
-	struct device *device[NUM_OF_DRIVER_NODES];
+	struct cdev cdev;
+	struct device *device;
 	resource_size_t phys_base;
 	void __iomem *virt_base;
 	unsigned int irq;
