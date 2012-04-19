@@ -31,7 +31,7 @@ make -j$CPU_JOB_NUM ARCH=arm CROSS_COMPILE=$TOOLCHAIN_PREFIX
 
 find . -name "*.ko" | xargs ${TOOLCHAIN_PREFIX}strip --strip-unneeded
 
-cp .config arch/arm/configs/lean_aosp_defconfig
+cp .config arch/arm/configs/andromadus_defconfig
 
 if [ -e arch/arm/boot/zImage ]; then
 
