@@ -23,10 +23,7 @@ zipfilev=$HANDLE"_KaijuraDCS-hijack_ICS.zip"
 CPU_JOB_NUM=16
 TOOLCHAIN_PREFIX=arm-none-eabi-
 
-echo "Config Name? "
-ls config
-read configfile
-cp -R config/$configfile .config
+cp -R config/$2_config .config
 
 make clean -j$CPU_JOB_NUM
 
@@ -112,7 +109,7 @@ for j in $(find . -name "*.ko"); do
 cp -R "${j}" $VIVOREPO/kernel/lib/modules
 done
 
-cd $SPADEREPO
+cd $VIVOREPO
 git commit -a -m "Automated Kernel Update - ${PROPER}"
 git push git@github.com:$VIVOGITHUB HEAD:ics -f
 
