@@ -2662,6 +2662,16 @@ static void vivo_reset(void)
 	gpio_set_value(VIVO_GPIO_PS_HOLD, 0);
 }
 
+#ifdef CONFIG_MDP4_HW_VSYNC
+static void vivo_te_gpio_config(void)
+{
+    uint32_t te_gpio_table[] = {
+        PCOM_GPIO_CFG(30, 1, GPIO_INPUT, GPIO_PULL_DOWN, GPIO_2MA),
+    };
+    config_gpio_table(te_gpio_table, ARRAY_SIZE(te_gpio_table));
+}
+#endif
+
 static void __init vivo_init(void)
 {
 	int rc = 0;
@@ -2781,6 +2791,9 @@ static void __init vivo_init(void)
 #endif
 	vivo_audio_init();
 	vivo_init_keypad();
+#ifdef CONFIG_MDP4_HW_VSYNC
+    vivo_te_gpio_config();
+#endif
 	vivo_wifi_init();
 	//vivo and vivow will share one panel code
 	vivow_init_panel(system_rev);
