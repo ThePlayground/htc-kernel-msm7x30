@@ -41,7 +41,7 @@ if [ "$1" == "1" ]; then
 
 echo "adding to build"
 
-cp -R arch/arm/boot/zImage $SPADEREPO/kernel/zImage
+cp -R arch/arm/boot/zImage $SPADEREPO/kernel/kernel
 rm -r $SPADEREPO/kernel/lib/modules/*
 for j in $(find . -name "*.ko"); do
 cp -R "${j}" $SPADEREPO/kernel/lib/modules
@@ -103,7 +103,7 @@ if [ "$1" == "1" ]; then
 
 echo "adding to build"
 
-cp -R arch/arm/boot/zImage $VIVOREPO/kernel/zImage
+cp -R arch/arm/boot/zImage $VIVOREPO/kernel/kernel
 rm -r $VIVOREPO/kernel/lib/modules/*
 for j in $(find . -name "*.ko"); do
 cp -R "${j}" $VIVOREPO/kernel/lib/modules
