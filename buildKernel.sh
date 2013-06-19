@@ -8,9 +8,7 @@ PROPER=`echo $2 | sed 's/\([a-z]\)\([a-zA-Z0-9]*\)/\u\1\2/g'`
 
 HANDLE=TwistedZero
 KERNELSPEC=/Volumes/android/htc-kernel-msm7x30
-ANDROIDREPO=/Volumes/android/Twisted-Playground
-TOOLCHAINDIR=/Volumes/android/android-tzb_ics4.0.1/prebuilt/darwin-x86/toolchain/arm-eabi-4.4.0/bin
-DROIDGITHUB=TwistedUmbrella/Twisted-Playground.git
+KERNELREPO=/Users/TwistedZero/Public/Dropbox/TwistedServer/Playground/kernels
 SPADEREPO=/Volumes/android/github-aosp_source/android_device_htc_ace
 SPADEGITHUB=ThePlayground/android_device_htc_ace.git
 VIVOREPO=/Volumes/android/github-aosp_source/android_device_htc_vivo
@@ -19,9 +17,9 @@ ICSREPO=/Volumes/android/github-aosp_source/android_system_core
 MSMREPO=/Volumes/android/github-aosp_source/android_device_htc_msm7x30-common
 zipfiles=$HANDLE"_Andromadus-hijack_ICS.zip"
 zipfilev=$HANDLE"_KaijuraDCS-hijack_ICS.zip"
+TOOLCHAIN_PREFIX=/Volumes/android/android-toolchain-eabi/bin/arm-eabi-
 
 CPU_JOB_NUM=16
-TOOLCHAIN_PREFIX=arm-none-eabi-
 
 cp -R config/$2_config .config
 
@@ -145,11 +143,7 @@ cp -R boot.img ../zip.aosp
 cd ../zip.aosp
 rm *.zip
 zip -r $zipfilev *
-cp -R $KERNELSPEC/zip.aosp/$zipfilev $ANDROIDREPO/Kernel/$zipfilev
-cd $ANDROIDREPO
-git checkout gh-pages
-git commit -a -m "Automated Patch Kernel Build - ${PROPER}"
-git push git@github.com:$DROIDGITHUB HEAD:ics -f
+cp -R $KERNELSPEC/zip.aosp/$zipfilev KERNELREPO/$zipfilev
 
 fi
 
